@@ -1,4 +1,5 @@
 {
+  "version": "2.0.0-beta.0",
   "name": "hubot-test-helper",
   "description": "Helper for testing hubot script",
   "main": "./src/index.js",
