@@ -146,7 +146,7 @@ class Helper {
     }
 
     for (let script of this.scriptsPaths) {
-      script = Path.resolve(Path.dirname(module.parent.filename), script);
+      script = Path.resolve(script);
       if (Fs.statSync(script).isDirectory()) {
         for (let file of Fs.readdirSync(script).sort()) {
           robot.loadFile(script, file);
