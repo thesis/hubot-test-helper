@@ -1,8 +1,6 @@
-'use strict'
-
 import {statSync, readdirSync} from 'fs';
 import {resolve as _resolve, dirname, basename} from 'path';
-import {Response, Robot, Adapter, User, TextMessage, EnterMessage, LeaveMessage} from 'hubot/es2015';
+import {Response, Robot, Adapter, User, TextMessage, EnterMessage, LeaveMessage} from 'hubot';
 
 process.setMaxListeners(0);
 
