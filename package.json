@@ -11,7 +11,7 @@
     "hubot"
   ],
   "dependencies": {
-    "hubot": ">=3.0.0 <10 || 0.0.0-development"
+    "hubot": ">=4.0.0-alpha"
   },
   "devDependencies": {
     "chai": "latest",
