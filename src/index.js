@@ -1,12 +1,12 @@
 'use strict'
 
-const Fs    = require('fs');
-const Path  = require('path');
-const Hubot = require('hubot/es2015');
+import {statSync, readdirSync} from 'fs';
+import {resolve as _resolve, dirname, basename} from 'path';
+import {Response, Robot, Adapter, User, TextMessage, EnterMessage, LeaveMessage} from 'hubot/es2015';
 
 process.setMaxListeners(0);
 
-class MockResponse extends Hubot.Response {
+class MockResponse extends Response {
   sendPrivate(/* ...strings*/) {
     const strings = [].slice.call(arguments, 0);
 
@@ -14,9 +14,9 @@ class MockResponse extends Hubot.Response {
   }
 }
 
-class MockRobot extends Hubot.Robot {
+class MockRobot extends Robot {
   constructor(httpd) {
-    if (httpd == null) { httpd = true; }
+    if (httpd == null) {httpd = true;}
     super(null, null, httpd, 'hubot');
 
     this.messagesTo = {};
@@ -40,7 +40,7 @@ class MockRobot extends Hubot.Robot {
   }
 }
 
-class Room extends Hubot.Adapter {
+class Room extends Adapter {
   // XXX: https://github.com/hubotio/hubot/pull/1390
   static messages(obj) {
     if (obj instanceof MockRobot) {
@@ -65,15 +65,15 @@ class Room extends Hubot.Adapter {
   }
 
   receive(userName, message, userParams) {
-    if (userParams == null) { userParams = {}; }
+    if (userParams == null) {userParams = {};}
     return new Promise(resolve => {
       let textMessage = null;
       if ((typeof message === 'object') && message) {
         textMessage = message;
       } else {
         userParams.room = this.name;
-        const user = new Hubot.User(userName, userParams);
-        textMessage = new Hubot.TextMessage(user, message);
+        const user = new User(userName, userParams);
+        textMessage = new TextMessage(user, message);
       }
 
       this.messages.push([userName, textMessage.text]);
@@ -82,7 +82,7 @@ class Room extends Hubot.Adapter {
   }
 
   destroy() {
-    if (this.robot.server) { this.robot.server.close(); }
+    if (this.robot.server) {this.robot.server.close();}
   }
 
   reply(envelope/*, ...strings*/) {
@@ -111,20 +111,20 @@ class Room extends Hubot.Adapter {
   }
 
   enter(userName, userParams) {
-    if (userParams == null) { userParams = {}; }
+    if (userParams == null) {userParams = {};}
     return new Promise(resolve => {
       userParams.room = this.name;
-      const user = new Hubot.User(userName, userParams);
-      this.robot.receive(new Hubot.EnterMessage(user), resolve);
+      const user = new User(userName, userParams);
+      this.robot.receive(new EnterMessage(user), resolve);
     });
   }
 
   leave(userName, userParams) {
-    if (userParams == null) { userParams = {}; }
+    if (userParams == null) {userParams = {};}
     return new Promise(resolve => {
       userParams.room = this.name;
-      const user = new Hubot.User(userName, userParams);
-      this.robot.receive(new Hubot.LeaveMessage(user), resolve);
+      const user = new User(userName, userParams);
+      this.robot.receive(new LeaveMessage(user), resolve);
     });
   }
 }
@@ -138,7 +138,7 @@ class Helper {
   }
 
   createRoom(options) {
-    if (options == null) { options = {}; }
+    if (options == null) {options = {};}
     const robot = new MockRobot(options.httpd);
 
     if ('response' in options) {
@@ -146,13 +146,13 @@ class Helper {
     }
 
     for (let script of this.scriptsPaths) {
-      script = Path.resolve(script);
-      if (Fs.statSync(script).isDirectory()) {
-        for (let file of Fs.readdirSync(script).sort()) {
+      script = _resolve(script);
+      if (statSync(script).isDirectory()) {
+        for (let file of readdirSync(script).sort()) {
           robot.loadFile(script, file);
         }
       } else {
-        robot.loadFile(Path.dirname(script), Path.basename(script));
+        robot.loadFile(dirname(script), basename(script));
       }
     }
 
@@ -164,4 +164,4 @@ class Helper {
 }
 Helper.Response = MockResponse;
 
-module.exports = Helper;
+export default Helper;
